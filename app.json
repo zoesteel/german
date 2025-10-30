@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "german",
-    "slug": "german",
+    "name": "Gender Reveal",
+    "slug": "gender-reveal",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -9,7 +9,11 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.zoesteel.genderreveal",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -19,7 +23,8 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.zoesteel.genderreveal"
     },
     "web": {
       "output": "static",
@@ -33,16 +38,30 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff",
+          "backgroundColor": "#453C67",
           "dark": {
-            "backgroundColor": "#000000"
+            "backgroundColor": "#453C67"
           }
+        }
+      ],
+      "expo-sqlite",
+      [
+        "react-native-google-mobile-ads",
+        {
+          "android_app_id": "ca-app-pub-xxxxxxxx~xxxxxxxx",
+          "ios_app_id": "ca-app-pub-xxxxxxxx~xxxxxxxx"
         }
       ]
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "0bdb6c54-22d5-4651-b76c-f64fcb972530"
+      }
+    },
   }
 }

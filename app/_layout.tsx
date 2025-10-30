@@ -1,24 +1,61 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { DarkTheme, DefaultTheme as NavDefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { Provider as PaperProvider, DefaultTheme } from 'react-native-paper';
+import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
-import { useColorScheme } from '@/hooks/use-color-scheme';
-
-export const unstable_settings = {
-  anchor: '(tabs)',
-};
-
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
+  const [loaded, error] = useFonts({
+    'Figtree': require('../assets/fonts/Figtree-Medium.ttf'),
+    'RibeyeMarrow': require('../assets/fonts/RibeyeMarrow-Regular.ttf'),
+    'DynaPuff': require('../assets/fonts/DynaPuff-Medium.ttf'),
+  });
 
+  if (!loaded && !error) {
+    return null;
+  }
+
+  const paperTheme = {
+    ...DefaultTheme,
+    fonts: {
+      ...DefaultTheme.fonts,
+      // Map all the font variants Paper uses
+      default: { ...DefaultTheme.fonts.default, fontFamily: 'Figtree' },
+      bodySmall: { ...DefaultTheme.fonts.bodySmall, fontFamily: 'Figtree' },
+      bodyMedium: { ...DefaultTheme.fonts.bodyMedium, fontFamily: 'Figtree' },
+      bodyLarge: { ...DefaultTheme.fonts.bodyLarge, fontFamily: 'Figtree' },
+      labelSmall: { ...DefaultTheme.fonts.labelSmall, fontFamily: 'Figtree' },
+      labelMedium: { ...DefaultTheme.fonts.labelMedium, fontFamily: 'Figtree' },
+      labelLarge: { ...DefaultTheme.fonts.labelLarge, fontFamily: 'Figtree' },
+    }
+  };
+
+
+  
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-      </Stack>
-      <StatusBar style="auto" />
+    <ThemeProvider value={DarkTheme}>
+      <PaperProvider theme={paperTheme}>
+        <Stack>
+          <Stack.Screen 
+            name='index' 
+            options={{ 
+              headerShown: false,
+              title: 'Search',
+              animation: 'fade'
+            }} 
+          />
+          <Stack.Screen 
+            name='result' 
+            options={{ 
+              headerShown: false,
+              title: 'Result',
+              animation: 'fade'
+            }} 
+          />
+        </Stack>
+        <StatusBar style="light" />
+      </PaperProvider>
     </ThemeProvider>
   );
 }
