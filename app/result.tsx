@@ -1,20 +1,27 @@
-import { Link, router, useLocalSearchParams } from 'expo-router';
-import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { router, useLocalSearchParams } from 'expo-router';
+import { useEffect, useRef, useState } from 'react';
+import { Platform, StyleSheet, Text, View } from 'react-native';
 import { Button } from 'react-native-paper';
-import { SvgXml } from 'react-native-svg';
 import {
   SafeAreaView
 } from 'react-native-safe-area-context';
 
-import { coffeeIcon } from '@/assets/images/bmc-full-logo.svg.js';
-import { Header } from '@/components/Header';
+import { BannerAd, BannerAdSize, TestIds, useForeground } from 'react-native-google-mobile-ads';
 
 export default function ResultScreen() {
   const { 'article': article, 'word': word } = useLocalSearchParams<{ 'article': string, 'word': string }>();
+
   const [bgColor, setBgColor] = useState('');
   const [buttonColor, setButtonColor] = useState('');
   const [displayArticle, setDisplayArticle] = useState('');
+  const [adLoaded, setAdLoaded] = useState(false)
+
+  const bannerRef = useRef<BannerAd>(null); 
+  const adUnitId = __DEV__ ? TestIds.ADAPTIVE_BANNER : 'ca-app-pub-xxxxxxxxxxxxx/yyyyyyyyyyyyyy';
+
+  useForeground(() => {
+    Platform.OS === 'ios' && bannerRef.current?.load();
+  });
 
   const genders = {
     m: 'der',
@@ -83,7 +90,7 @@ export default function ResultScreen() {
           >
             Search again
           </Button>
-          <View style={{width: 320, height: 50, backgroundColor:'red', alignSelf: 'center' }}></View>
+          {/* <View style={{width: 320, height: 50, backgroundColor:'red', alignSelf: 'center' }}></View> */}
           {/* <View style={styles.coffeeLink}>
             <Link href='https://buymeacoffee.com/zoesteel'>
               {/* <Image
@@ -95,6 +102,14 @@ export default function ResultScreen() {
             </Link>
           </View> */}
         </View>
+      <BannerAd
+        ref={bannerRef}
+        unitId={adUnitId}
+        size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
+        onAdLoaded={() => setAdLoaded(true)}
+        onAdFailedToLoad={(error) => console.log('Failed to load banner', error)}
+      />
+      {!adLoaded && <View style={{width: 320, height: 60, alignSelf: 'center' }}></View>}
       </SafeAreaView>
     </>
   );

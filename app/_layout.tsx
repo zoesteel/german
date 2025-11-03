@@ -1,9 +1,12 @@
 import { DarkTheme, DefaultTheme as NavDefaultTheme, ThemeProvider } from '@react-navigation/native';
+import mobileAds from 'react-native-google-mobile-ads';
 import { Provider as PaperProvider, DefaultTheme } from 'react-native-paper';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { useEffect } from 'react';
 import 'react-native-reanimated';
+import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads';
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
@@ -15,6 +18,17 @@ export default function RootLayout() {
   if (!loaded && !error) {
     return null;
   }
+
+  // useEffect(() => {
+  //   mobileAds()
+  //     .initialize()
+  //     .then(adapterStatuses => {
+  //       console.log('Google Mobile Ads initialized');
+  //     });
+  // }, []);
+
+  const adUnitId = __DEV__ ? TestIds.BANNER : 'ca-app-pub-your-real-id';
+
 
   const paperTheme = {
     ...DefaultTheme,
