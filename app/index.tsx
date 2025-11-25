@@ -1,24 +1,26 @@
-import { Link, router, useFocusEffect } from 'expo-router';
-import React, { useState, useEffect } from 'react';
+import { router } from 'expo-router';
+import React, { useEffect, useState, useRef } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Button, Searchbar } from 'react-native-paper';
-import { getArticleForWord } from '../utils/searchGermanWords';
-import { migrateCsvToDatabase } from '../utils/csvMigration';
 import {
   SafeAreaView
 } from 'react-native-safe-area-context';
 import { SvgXml } from 'react-native-svg';
+import { migrateCsvToDatabase } from '../utils/csvMigration';
+import { getArticleForWord } from '../utils/searchGermanWords';
 // @ts-ignore
-import { coffeeIcon } from '@/assets/images/bmc-full-logo.svg.js';
-import { Header } from '@/components/Header';
 import { icon } from '@/assets/images/icon.svg.js';
+import { Header } from '@/components/Header';
 
+import { BannerAd, BannerAdSize, TestIds, useForeground } from 'react-native-google-mobile-ads';
 
 export default function HomeScreen() {
   const [errorMessage, setErrorMessage] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [isInitializing, setIsInitializing] = useState(true);
-
+  const bannerRef = useRef<BannerAd>(null); 
+  const adUnitId = __DEV__ ? TestIds.ADAPTIVE_BANNER : 'ca-app-pub-xxxxxxxxxxxxx/yyyyyyyyyyyyyy';
+  const [adLoaded, setAdLoaded] = useState(false)
   const [result, setResult] = useState({
     article: '',
     word: '',
@@ -87,7 +89,7 @@ export default function HomeScreen() {
           </View>
         ) : (
           <>
-            <View>
+            <View style={styles.contentWrapper}>
               <Searchbar
                 placeholder="Search for a word (e.g. Katze)"
                 onChangeText={updateSearch}
@@ -97,7 +99,7 @@ export default function HomeScreen() {
                     xml={icon}
                     width={24}
                     height={24}
-                    fill={props.color}  // use the color provided by Paper for consistency
+                    fill={props.color} // use the color provided by Paper for consistency
                   />
                 )}
                 onIconPress={() => handleSearch(searchTerm)}
@@ -125,12 +127,19 @@ export default function HomeScreen() {
                 Search
               </Button>
             </View>
-
-            <View style={styles.coffeeLink}>
+            <BannerAd
+              ref={bannerRef}
+              unitId={adUnitId}
+              size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
+              onAdLoaded={() => setAdLoaded(true)}
+              onAdFailedToLoad={(error) => console.log('Failed to load banner', error)}
+            />
+            {!adLoaded && <View style={{width: 300, height: 60, alignSelf: 'center' }}></View>}
+            {/* <View style={styles.coffeeLink}>
               <Link href="https://buymeacoffee.com/zoesteel">
                 <SvgXml xml={coffeeIcon} height="32" style={styles.image}/>
               </Link>
-            </View>
+            </View> */}
           </>
         )}
       </SafeAreaView>
@@ -143,19 +152,21 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     height: '100%',
-    // justifyContent: 'space-between',
     backgroundColor: '#4f4085',
     paddingHorizontal: 20,
     color: '#c6b4ff',
+  },
+  contentWrapper: {
+    flex: 1,
     justifyContent: 'center',
-    // alignItems: 'center',
+    marginTop: -150
   },
   searchBar: {
     backgroundColor: '#1c1438',
     borderWidth: 3,
     borderColor: 'transparent',
     // fontFamily: 'Figtree',
-    marginVertical: 10,
+    // marginVertical: 10,
   },
   searchError: {
     backgroundColor: '#1c1438',
@@ -176,7 +187,7 @@ const styles = StyleSheet.create({
     // fontFamily: 'Figtree',
   },
   searchButton: {
-    marginTop: 30,
+    marginTop: 0,
     // fontFamily: 'Figtree',
     color: '#c6b4ff'
   },

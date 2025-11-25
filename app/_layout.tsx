@@ -45,8 +45,6 @@ export default function RootLayout() {
     }
   };
 
-
-  
   return (
     <ThemeProvider value={DarkTheme}>
       <PaperProvider theme={paperTheme}>
@@ -64,7 +62,7 @@ export default function RootLayout() {
             options={{ 
               headerShown: false,
               title: 'Result',
-              animation: 'fade'
+              animation: 'slide_from_bottom'
             }} 
           />
         </Stack>

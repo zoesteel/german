@@ -7,6 +7,7 @@ import {
 } from 'react-native-safe-area-context';
 
 import { BannerAd, BannerAdSize, TestIds, useForeground } from 'react-native-google-mobile-ads';
+import { Header } from '@/components/Header';
 
 export default function ResultScreen() {
   const { 'article': article, 'word': word } = useLocalSearchParams<{ 'article': string, 'word': string }>();
@@ -102,6 +103,7 @@ export default function ResultScreen() {
             </Link>
           </View> */}
         </View>
+      </SafeAreaView>
       <BannerAd
         ref={bannerRef}
         unitId={adUnitId}
@@ -109,8 +111,7 @@ export default function ResultScreen() {
         onAdLoaded={() => setAdLoaded(true)}
         onAdFailedToLoad={(error) => console.log('Failed to load banner', error)}
       />
-      {!adLoaded && <View style={{width: 320, height: 60, alignSelf: 'center' }}></View>}
-      </SafeAreaView>
+      {!adLoaded && <View style={{width: 300, height: 60, alignSelf: 'center' }}></View>}
     </>
   );
 }
@@ -118,21 +119,12 @@ export default function ResultScreen() {
 const styles = StyleSheet.create({
   outerContainer: {
     height: '100%',
-    // color: '#c6b4ff',
     flex: 1,
-    // alignItems: 'center',
-    // justifyContent: 'center',
-    // flex: 1,
-    // height: '100%',
     justifyContent: 'center',
-    // backgroundColor: '#4f4085',
     paddingHorizontal: 20,
-    paddingVertical: 20,
-    // color: '#ffffff',
   },
   container: {
     justifyContent: 'space-evenly',
-    // height: '100%',
   },
   text: {
     fontSize: 24,
