@@ -1,9 +1,9 @@
 import { router } from 'expo-router';
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Button, Searchbar } from 'react-native-paper';
 import {
-  SafeAreaView
+    SafeAreaView
 } from 'react-native-safe-area-context';
 import { SvgXml } from 'react-native-svg';
 import { migrateCsvToDatabase } from '../utils/csvMigration';
@@ -11,20 +11,38 @@ import { getArticleForWord } from '../utils/searchGermanWords';
 // @ts-ignore
 import { icon } from '@/assets/images/icon.svg.js';
 import { Header } from '@/components/Header';
+import { Colors } from '../constants/theme';
 
-import { BannerAd, BannerAdSize, TestIds, useForeground } from 'react-native-google-mobile-ads';
+import { AD_UNIT_IDS } from '@/constants/ads';
+import analytics from '@react-native-firebase/analytics';
+import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads';
 
 export default function HomeScreen() {
   const [errorMessage, setErrorMessage] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [isInitializing, setIsInitializing] = useState(true);
-  const bannerRef = useRef<BannerAd>(null); 
-  const adUnitId = __DEV__ ? TestIds.ADAPTIVE_BANNER : 'ca-app-pub-xxxxxxxxxxxxx/yyyyyyyyyyyyyy';
+  const bannerRef = useRef<BannerAd>(null);
   const [adLoaded, setAdLoaded] = useState(false)
   const [result, setResult] = useState({
     article: '',
     word: '',
   });
+
+  useEffect(() => {
+    const screenVisitAnalytics = async () => {
+      try {
+        await analytics().logScreenView({
+          screen_name: 'HomeScreen',
+          screen_class: 'HomeScreen',
+        });
+      } catch (error) {
+        console.log('Firebase Analytics not ready');
+      }
+    }
+
+    // Delay analytics call to ensure Firebase is initialized
+    setTimeout(screenVisitAnalytics, 2000);
+  }, [])
 
   // Reset search term when the screen comes into focus
   // useFocusEffect(() => {
@@ -55,6 +73,16 @@ export default function HomeScreen() {
       setErrorMessage('Please enter a word');
       return;
     };
+    
+    // Log search event - with error handling
+    try {
+      await analytics().logEvent('button_clicked', {
+        button_name: 'word_search'
+      });
+    } catch (error) {
+      // Analytics failed, continue with search
+    }
+
     const articleResult = await getArticleForWord(searchTerm.trim());
     const resultData = articleResult;
     if(!resultData) {
@@ -64,12 +92,6 @@ export default function HomeScreen() {
     setResult({...resultData})
     router.push({ pathname: "/result", params: { ...resultData } });
   };
-
-  // const colours = {
-  //   m: '#6D67E4',
-  //   f: '#ED9ED6',
-  //   n: '#46C2CB',
-  // };
 
   const updateSearch = (searchTerm: any) => {
     setSearchTerm(searchTerm);
@@ -99,17 +121,17 @@ export default function HomeScreen() {
                     xml={icon}
                     width={24}
                     height={24}
-                    fill={props.color} // use the color provided by Paper for consistency
+                    fill={props.color}
                   />
                 )}
                 onIconPress={() => handleSearch(searchTerm)}
                 style={errorMessage ? styles.searchError : styles.searchBar}
                 inputStyle={{
-                  color: '#d8d2eb',
+                  color: Colors.dark.text,
                 }}
-                iconColor="#d8d2eb"
-                placeholderTextColor="#d8d2eb"
-                selectionColor="#c6b4ff" // cursor/selection
+                iconColor={Colors.dark.text}
+                placeholderTextColor={Colors.dark.text}
+                selectionColor={Colors.dark.text} // cursor/selection
               />
               <View style={styles.error}>
               {errorMessage && 
@@ -121,40 +143,35 @@ export default function HomeScreen() {
                 mode='contained'
                 dark={true}
                 style={styles.searchButton}
-                // disabled={!searchTerm}
-                // labelStyle={{ fontFamily: 'RibeyeMarrow' }}
+                buttonColor={Colors.light.secondary}
+                disabled={!searchTerm}
               >
                 Search
               </Button>
             </View>
-            <BannerAd
-              ref={bannerRef}
-              unitId={adUnitId}
-              size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
-              onAdLoaded={() => setAdLoaded(true)}
-              onAdFailedToLoad={(error) => console.log('Failed to load banner', error)}
-            />
-            {!adLoaded && <View style={{width: 300, height: 60, alignSelf: 'center' }}></View>}
-            {/* <View style={styles.coffeeLink}>
-              <Link href="https://buymeacoffee.com/zoesteel">
-                <SvgXml xml={coffeeIcon} height="32" style={styles.image}/>
-              </Link>
-            </View> */}
           </>
         )}
       </SafeAreaView>
+      <BannerAd
+        ref={bannerRef}
+        unitId={AD_UNIT_IDS?.banner}
+        size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
+        onAdLoaded={() => setAdLoaded(true)}
+        onAdFailedToLoad={(error) => console.log('Failed to load banner', error)}
+      />
+      {!adLoaded && <View style={{width: 300, height: 60, alignSelf: 'center' }}></View>}
     </>
   );
 }
-
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     height: '100%',
-    backgroundColor: '#4f4085',
+    justifyContent: 'center',
+    backgroundColor: Colors.light.background,
     paddingHorizontal: 20,
-    color: '#c6b4ff',
+    color: Colors.dark.text,
   },
   contentWrapper: {
     flex: 1,
@@ -162,34 +179,23 @@ const styles = StyleSheet.create({
     marginTop: -150
   },
   searchBar: {
-    backgroundColor: '#1c1438',
+    backgroundColor: Colors.light.text,
     borderWidth: 3,
     borderColor: 'transparent',
-    // fontFamily: 'Figtree',
-    // marginVertical: 10,
   },
   searchError: {
-    backgroundColor: '#1c1438',
-    borderColor: '#BE3144',
+    backgroundColor: Colors.light.text,
+    borderColor: Colors.light.primary,
     borderWidth: 3,
-  },
-  coffeeLink: {
-    height: '5%',
-    width: '50%',
-    justifyContent: 'flex-end',
-    alignSelf: 'center',
   },
   error: {
     borderRadius: 10,
     padding: 10,
     height: 50,
-    color: '#c6b4ff',
-    // fontFamily: 'Figtree',
+    color: Colors.light.text,
   },
   searchButton: {
     marginTop: 0,
-    // fontFamily: 'Figtree',
-    color: '#c6b4ff'
   },
   loadingContainer: {
     flex: 1,
@@ -198,13 +204,13 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     fontSize: 18,
-    color: '#c6b4ff',
+    color: Colors.light.text,
     textAlign: 'center',
     marginBottom: 10,
   },
   loadingSubtext: {
     fontSize: 14,
-    color: '#8b7db8',
+    color: Colors.light.text,
     textAlign: 'center',
   },
   link: {},

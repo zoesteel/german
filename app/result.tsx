@@ -6,8 +6,11 @@ import {
   SafeAreaView
 } from 'react-native-safe-area-context';
 
-import { BannerAd, BannerAdSize, TestIds, useForeground } from 'react-native-google-mobile-ads';
+import { BannerAd, BannerAdSize, useForeground } from 'react-native-google-mobile-ads';
 import { Header } from '@/components/Header';
+import { AD_UNIT_IDS } from '@/constants/ads';
+
+import { Colors } from '../constants/theme';
 
 export default function ResultScreen() {
   const { 'article': article, 'word': word } = useLocalSearchParams<{ 'article': string, 'word': string }>();
@@ -17,8 +20,7 @@ export default function ResultScreen() {
   const [displayArticle, setDisplayArticle] = useState('');
   const [adLoaded, setAdLoaded] = useState(false)
 
-  const bannerRef = useRef<BannerAd>(null); 
-  const adUnitId = __DEV__ ? TestIds.ADAPTIVE_BANNER : 'ca-app-pub-xxxxxxxxxxxxx/yyyyyyyyyyyyyy';
+  const bannerRef = useRef<BannerAd>(null);
 
   useForeground(() => {
     Platform.OS === 'ios' && bannerRef.current?.load();
@@ -30,19 +32,15 @@ export default function ResultScreen() {
     n: 'das',
   };
 
-  // const colours = {
-  //   m: '#77BEF0',
-  //   f: '#f47373',
-  //   n: '#e9f066',
-  // };
   const colours = {
     m: {
       bg: '#375785',
       button: '#0E2B57'
     },
     f: {
-      bg: '#d86b9c',
-      button: '#A5235E'
+      // bg: '#d86b9c',
+      bg: '#F57373',
+      button: '#D24747'
     },
     n: {
       bg: '#4EA699',
@@ -91,22 +89,11 @@ export default function ResultScreen() {
           >
             Search again
           </Button>
-          {/* <View style={{width: 320, height: 50, backgroundColor:'red', alignSelf: 'center' }}></View> */}
-          {/* <View style={styles.coffeeLink}>
-            <Link href='https://buymeacoffee.com/zoesteel'>
-              {/* <Image
-                source={require('@/assets/images/violet-button.png')}
-                style={styles.image}
-              /> */}
-
-              {/* <SvgXml xml={coffeeIcon} height="32" style={styles.image}/>
-            </Link>
-          </View> */}
         </View>
       </SafeAreaView>
       <BannerAd
         ref={bannerRef}
-        unitId={adUnitId}
+        unitId={AD_UNIT_IDS?.banner}
         size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
         onAdLoaded={() => setAdLoaded(true)}
         onAdFailedToLoad={(error) => console.log('Failed to load banner', error)}
@@ -127,21 +114,15 @@ const styles = StyleSheet.create({
     justifyContent: 'space-evenly',
   },
   text: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
     fontFamily: 'Figtree',
     textAlign: 'center',
-    color: '#ffffff',
+    color: Colors.dark.text,
   },
   backButton: {
     marginTop: 10,
     width: '100%',
-  },
-  coffeeLink: {
-    height: '5%',
-    width: '50%',
-    justifyContent: 'flex-end',
-    alignSelf: 'center',
   },
   image: {
     height: '100%',

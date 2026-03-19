@@ -1,34 +1,46 @@
-import { DarkTheme, DefaultTheme as NavDefaultTheme, ThemeProvider } from '@react-navigation/native';
-import mobileAds from 'react-native-google-mobile-ads';
-import { Provider as PaperProvider, DefaultTheme } from 'react-native-paper';
+import analytics from '@react-native-firebase/analytics';
+import { DarkTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
+import mobileAds from 'react-native-google-mobile-ads';
+import { DefaultTheme, Provider as PaperProvider } from 'react-native-paper';
 import 'react-native-reanimated';
-import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads';
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
     'Figtree': require('../assets/fonts/Figtree-Medium.ttf'),
     'RibeyeMarrow': require('../assets/fonts/RibeyeMarrow-Regular.ttf'),
     'DynaPuff': require('../assets/fonts/DynaPuff-Medium.ttf'),
-  });
+  })
+
+  useEffect(() => {
+    const initializeFirebase = async () => {
+      try {
+        // Firebase auto-initializes from GoogleService-Info.plist
+        await analytics().setAnalyticsCollectionEnabled(true);
+        await analytics().logEvent('app_open', {
+          timestamp: new Date().toISOString()
+        });
+        console.log('Firebase Analytics initialized successfully');
+      } catch (err) {
+        console.error('Firebase initialization error:', err);
+      }
+    };
+    
+    initializeFirebase();
+  }, []);
 
   if (!loaded && !error) {
     return null;
   }
 
-  // useEffect(() => {
-  //   mobileAds()
-  //     .initialize()
-  //     .then(adapterStatuses => {
-  //       console.log('Google Mobile Ads initialized');
-  //     });
-  // }, []);
-
-  const adUnitId = __DEV__ ? TestIds.BANNER : 'ca-app-pub-your-real-id';
-
+  mobileAds()
+    .initialize()
+    .then(adapterStatuses => {
+      console.log('Google Mobile Ads initialized');
+    });
 
   const paperTheme = {
     ...DefaultTheme,

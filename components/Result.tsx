@@ -1,7 +1,5 @@
 import {useState, useEffect} from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { Button } from 'react-native-paper';
-import { router, useLocalSearchParams, Link } from 'expo-router';
 import { Header } from './Header';
 
 type ResultProps = {
@@ -18,12 +16,6 @@ export const Result: React.FC<ResultProps> = ({ word, article }) => {
     f: 'die',
     n: 'das',
   };
-
-  // const colours = {
-  //   m: '#77BEF0',
-  //   f: '#FF8383',
-  //   n: '#A1D6CB',
-  // };
 
   const colours = {
     m: '#375785',
@@ -46,7 +38,7 @@ export const Result: React.FC<ResultProps> = ({ word, article }) => {
         setDisplayArticle(genders.n);
         return;
     }
-  }, [article])
+  }, [])
 
   return (
     <>

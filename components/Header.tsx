@@ -4,39 +4,53 @@ import {
   SafeAreaView
 } from 'react-native-safe-area-context';
 import { SvgXml } from 'react-native-svg';
+import { Colors } from '../constants/theme';
 
 export const Header: React.FC = () => {
   return (
-    <SafeAreaView style={styles.safeAreaContainer}>
-      <View style={styles.container}>
-          <SvgXml xml={icon} width="50" height="32" />
+    <View style={styles.shadowWrapper}>
+      <SafeAreaView style={styles.safeAreaContainer}>
+        <SvgXml xml={icon} width={140} height={140} style={styles.icon} />
+        <View style={styles.container}>
           <Text style={styles.text}>gender reveal</Text>
-      </View>
-    </SafeAreaView>
+        </View>
+      </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  shadowWrapper: {
+    shadowColor: Colors.light.text,
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.50,
+    shadowRadius: 4.65,
+    elevation: 8,
+    zIndex: 100,
+  },
+  icon: {
+    position: 'absolute',
+    alignSelf: 'center',
+    top: -12,
+    left: -16,
+    zIndex: 1,
+  },
   container: {
     flexDirection: 'row',
     justifyContent: 'center',
   },
   safeAreaContainer: {
-    backgroundColor: '#1c1438',
+    backgroundColor: Colors.light.primary,
     width: '100%',
-    paddingTop: 30,
-    shadowColor: "#f8f8f8",
-    shadowOffset: {
-      width: 1,
-      height: 5,
-    },
-    shadowOpacity: 0.34,
-    shadowRadius: 6.27,
-    elevation: 10,
+    paddingTop: 16,
+    paddingBottom: 12,
   },
   text: {
     fontSize: 20,
-    color: '#d8d2eb',
+    color: Colors.dark.text,
     fontFamily: 'DynaPuff'
   },
 });
