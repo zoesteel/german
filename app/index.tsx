@@ -5,8 +5,8 @@ import { Button, Searchbar } from 'react-native-paper';
 import {
     SafeAreaView
 } from 'react-native-safe-area-context';
+import { useInitializing } from '../context/initializing-context';
 import { SvgXml } from 'react-native-svg';
-import { migrateCsvToDatabase } from '../utils/csvMigration';
 import { getArticleForWord } from '../utils/searchGermanWords';
 // @ts-ignore
 import { icon } from '@/assets/images/icon.svg.js';
@@ -14,15 +14,19 @@ import { Header } from '@/components/Header';
 import { Colors } from '../constants/theme';
 
 import { AD_UNIT_IDS } from '@/constants/ads';
-import analytics from '@react-native-firebase/analytics';
+// import analytics from '@react-native-firebase/analytics';
 import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads';
+import { useAnalytics, useScreenTracking } from '@/hooks/use-analytics';
 
 export default function HomeScreen() {
+  const { logSearch, logButtonPress } = useAnalytics();
+  const initializing = useInitializing();
+
   const [errorMessage, setErrorMessage] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
-  const [isInitializing, setIsInitializing] = useState(true);
+
   const bannerRef = useRef<BannerAd>(null);
-  const [adLoaded, setAdLoaded] = useState(false)
+  const [adLoaded, setAdLoaded] = useState(false);
   const [result, setResult] = useState({
     article: '',
     word: '',
@@ -31,10 +35,7 @@ export default function HomeScreen() {
   useEffect(() => {
     const screenVisitAnalytics = async () => {
       try {
-        await analytics().logScreenView({
-          screen_name: 'HomeScreen',
-          screen_class: 'HomeScreen',
-        });
+        await useScreenTracking();
       } catch (error) {
         console.log('Firebase Analytics not ready');
       }
@@ -50,38 +51,11 @@ export default function HomeScreen() {
   //   // setErrorMessage('');
   // });
 
-  // Initialize database on app start
-  useEffect(() => {
-    const initializeApp = async () => {
-      try {
-        console.log('Initializing database...');
-        await migrateCsvToDatabase();
-        console.log('Database ready!');
-      } catch (error) {
-        console.error('Failed to initialize database:', error);
-        setErrorMessage('Failed to initialize app. Please restart.');
-      } finally {
-        setIsInitializing(false);
-      }
-    };
-
-    initializeApp();
-  }, []);
-
   const handleSearch = async (searchTerm: string) => {
     if(!searchTerm.trim()) {
       setErrorMessage('Please enter a word');
       return;
     };
-    
-    // Log search event - with error handling
-    try {
-      await analytics().logEvent('button_clicked', {
-        button_name: 'word_search'
-      });
-    } catch (error) {
-      // Analytics failed, continue with search
-    }
 
     const articleResult = await getArticleForWord(searchTerm.trim());
     const resultData = articleResult;
@@ -89,7 +63,16 @@ export default function HomeScreen() {
       setErrorMessage('Word not found');
       return;
     }
+
     setResult({...resultData})
+
+    // Log search event
+    try {
+      await logSearch(searchTerm);
+    } catch (error) {
+      // Analytics failed, continue with search
+    }
+
     router.push({ pathname: "/result", params: { ...resultData } });
   };
 
@@ -104,7 +87,7 @@ export default function HomeScreen() {
     <>
       <Header />
       <SafeAreaView style={styles.container}>
-        {isInitializing ? (
+        {initializing ? (
           <View style={styles.loadingContainer}>
             <Text style={styles.loadingText}>Setting up app...</Text>
             <Text style={styles.loadingSubtext}>This only happens once</Text>

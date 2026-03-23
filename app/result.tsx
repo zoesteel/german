@@ -38,7 +38,6 @@ export default function ResultScreen() {
       button: '#0E2B57'
     },
     f: {
-      // bg: '#d86b9c',
       bg: '#F57373',
       button: '#D24747'
     },
@@ -46,7 +45,6 @@ export default function ResultScreen() {
       bg: '#4EA699',
       button: '#187E70'
     },
-    // 4cc9f0
   };
 
   useEffect(() => {

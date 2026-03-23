@@ -49,11 +49,7 @@ import { logEvent, logGameResult, logButtonClick } from '@/utils/analytics';
 await logEvent('word_revealed', {
   word: 'die Katze',
   gender: 'feminine',
-  difficulty: 'beginner'
 });
-
-// Log game results
-await logGameResult('correct', 'die Katze', 'beginner');
 
 // Log button clicks
 await logButtonClick('hint_button', 'game_screen');
@@ -78,10 +74,6 @@ function SearchComponent() {
 
 ```tsx
 import { setUserProperty } from '@/utils/analytics';
-
-// Track user preferences or characteristics
-await setUserProperty('preferred_language', 'german');
-await setUserProperty('skill_level', 'intermediate');
 ```
 
 ## Common Events to Track
@@ -95,23 +87,6 @@ await logEvent('word_lookup', {
   gender: result.gender,
   timestamp: Date.now()
 });
-```
-
-2. **Quiz Results**
-```tsx
-await logGameResult('correct', word, 'beginner');
-```
-
-3. **Feature Usage**
-```tsx
-await logButtonPress('reveal_gender', {
-  word: currentWord
-});
-```
-
-4. **User Progress**
-```tsx
-await logLevelComplete(level, score);
 ```
 
 ## Privacy & GDPR Compliance
