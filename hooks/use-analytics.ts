@@ -1,4 +1,4 @@
-import analytics from '@react-native-firebase/analytics';
+import { getAnalytics, logEvent, setAnalyticsCollectionEnabled } from '@react-native-firebase/analytics';
 import { usePathname } from 'expo-router';
 import { useEffect } from 'react';
 
@@ -14,12 +14,12 @@ export function useScreenTracking() {
       try {
         // Convert pathname to screen name (e.g., "/result" -> "result_screen")
         const screenName = pathname === '/' ? 'home_screen' : pathname.slice(1).replace(/\//g, '_') + '_screen';
-        
-        await analytics().logScreenView({
+
+        await logEvent(getAnalytics(), 'screen_view' as any, {
           screen_name: screenName,
           screen_class: screenName,
         });
-        
+
         console.log('Screen tracked:', screenName);
       } catch (error) {
         // Silently fail if analytics not ready
@@ -37,9 +37,14 @@ export function useScreenTracking() {
  * Hook to track custom events with a simple API
  */
 export function useAnalytics() {
-  const logEvent = async (eventName: string, params?: { [key: string]: any }) => {
+    const initAnalytics = async () => {
+      const analytics = getAnalytics();
+      await setAnalyticsCollectionEnabled(analytics, true);
+    };
+
+  const logCustomEvent = async (eventName: string, params?: { [key: string]: any }) => {
     try {
-      await analytics().logEvent(eventName, params);
+      await logEvent(getAnalytics(), eventName, params);
       console.log('Event logged:', eventName, params);
     } catch (error) {
       console.error('Error logging event:', error);
@@ -47,21 +52,14 @@ export function useAnalytics() {
   };
 
   const logButtonPress = async (buttonName: string, additionalParams?: { [key: string]: any }) => {
-    await logEvent('button_press', {
-      button_name: buttonName,
-      ...additionalParams,
-    });
+    await logCustomEvent('button_press', { button_name: buttonName, ...additionalParams });
   };
 
-  const logSearch = async (searchTerm: string) => {
-    await analytics().logSearch({
-      search_term: searchTerm,
-    });
+  const logSearchTerm = async (searchTerm: string) => {
+    // logSearch is deprecated, use logEvent directly
+    await logEvent(getAnalytics(), 'search', { search_term: searchTerm });
+    console.log('Search tracked:', searchTerm);
   };
 
-  return {
-    logEvent,
-    logButtonPress,
-    logSearch,
-  };
+  return { logEvent: logCustomEvent, logButtonPress, logSearch: logSearchTerm, initAnalytics };
 }

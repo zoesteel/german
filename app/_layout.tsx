@@ -1,10 +1,4 @@
-import { 
-  createContext,
-  useContext,
-  useEffect,
-  useState
-} from 'react';
-import analytics from '@react-native-firebase/analytics';
+import { useEffect, useState } from 'react';
 import { DarkTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
@@ -12,36 +6,30 @@ import { StatusBar } from 'expo-status-bar';
 import mobileAds from 'react-native-google-mobile-ads';
 import { DefaultTheme, Provider as PaperProvider } from 'react-native-paper';
 import 'react-native-reanimated';
-import { useAnalytics } from '../hooks/use-analytics';
+import { useAnalytics, useScreenTracking  } from '../hooks/use-analytics'
 import { InitializingProvider } from '../context/initializing-context'
 import { migrateCsvToDatabase } from '../utils/csvMigration';
 
 export default function RootLayout() {
   const [isInitializing, setIsInitializing] = useState(true);
-  // const [errorMessage, setErrorMessage] = useState('');
-  const InitializingContext = createContext(false);
-
+  
   const [loaded, error] = useFonts({
     'Figtree': require('../assets/fonts/Figtree-Medium.ttf'),
     'RibeyeMarrow': require('../assets/fonts/RibeyeMarrow-Regular.ttf'),
     'DynaPuff': require('../assets/fonts/DynaPuff-Medium.ttf'),
   })
   const { logEvent } = useAnalytics();
+  useScreenTracking();
 
   useEffect(() => {
     const initializeFirebase = async () => {
       try {
-        // Firebase auto-initializes from GoogleService-Info.plist
-        await analytics().setAnalyticsCollectionEnabled(true);
-        await logEvent('app_open', {
-          timestamp: new Date().toISOString()
-        });
+        await logEvent('app_open', { timestamp: new Date().toISOString() });
         console.log('Firebase Analytics initialized successfully');
       } catch (err) {
         console.error('Firebase initialization error:', err);
       }
     };
-    
     initializeFirebase();
   }, []);
 
@@ -63,15 +51,15 @@ export default function RootLayout() {
     initializeApp();
   }, []);
 
+  useEffect(() => {
+    mobileAds().initialize().then(() => {
+      console.log('Google Mobile Ads initialized');
+    });
+  }, []);
+
   if (!loaded && !error) {
     return null;
   }
-
-  mobileAds()
-    .initialize()
-    .then(adapterStatuses => {
-      console.log('Google Mobile Ads initialized');
-    });
 
   const paperTheme = {
     ...DefaultTheme,

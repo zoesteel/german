@@ -32,19 +32,6 @@ export default function HomeScreen() {
     word: '',
   });
 
-  useEffect(() => {
-    const screenVisitAnalytics = async () => {
-      try {
-        await useScreenTracking();
-      } catch (error) {
-        console.log('Firebase Analytics not ready');
-      }
-    }
-
-    // Delay analytics call to ensure Firebase is initialized
-    setTimeout(screenVisitAnalytics, 2000);
-  }, [])
-
   // Reset search term when the screen comes into focus
   // useFocusEffect(() => {
   //   setSearchTerm('');
@@ -67,11 +54,7 @@ export default function HomeScreen() {
     setResult({...resultData})
 
     // Log search event
-    try {
-      await logSearch(searchTerm);
-    } catch (error) {
-      // Analytics failed, continue with search
-    }
+    await logSearch(searchTerm);
 
     router.push({ pathname: "/result", params: { ...resultData } });
   };
