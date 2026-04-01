@@ -15,7 +15,7 @@ import { Colors } from '../constants/theme';
 
 import { AD_UNIT_IDS } from '@/constants/ads';
 // import analytics from '@react-native-firebase/analytics';
-import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads';
+// import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads';
 import { useAnalytics, useScreenTracking } from '@/hooks/use-analytics';
 
 export default function HomeScreen() {
@@ -25,7 +25,7 @@ export default function HomeScreen() {
   const [errorMessage, setErrorMessage] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
 
-  const bannerRef = useRef<BannerAd>(null);
+  // const bannerRef = useRef<BannerAd>(null);
   const [adLoaded, setAdLoaded] = useState(false);
   const [result, setResult] = useState({
     article: '',
@@ -118,14 +118,14 @@ export default function HomeScreen() {
           </>
         )}
       </SafeAreaView>
-      <BannerAd
+      {/* <BannerAd
         ref={bannerRef}
         unitId={AD_UNIT_IDS?.banner}
         size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
         onAdLoaded={() => setAdLoaded(true)}
         onAdFailedToLoad={(error) => console.log('Failed to load banner', error)}
       />
-      {!adLoaded && <View style={{width: 300, height: 60, alignSelf: 'center' }}></View>}
+      {!adLoaded && <View style={{width: 300, height: 60, alignSelf: 'center' }}></View>} */}
     </>
   );
 }

@@ -3,7 +3,7 @@ import { DarkTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import mobileAds from 'react-native-google-mobile-ads';
+// import mobileAds from 'react-native-google-mobile-ads';
 import { DefaultTheme, Provider as PaperProvider } from 'react-native-paper';
 import 'react-native-reanimated';
 import { useAnalytics, useScreenTracking  } from '../hooks/use-analytics'
@@ -51,11 +51,11 @@ export default function RootLayout() {
     initializeApp();
   }, []);
 
-  useEffect(() => {
-    mobileAds().initialize().then(() => {
-      console.log('Google Mobile Ads initialized');
-    });
-  }, []);
+  // useEffect(() => {
+  //   mobileAds().initialize().then(() => {
+  //     console.log('Google Mobile Ads initialized');
+  //   });
+  // }, []);
 
   if (!loaded && !error) {
     return null;

@@ -7,8 +7,7 @@ import {
 } from 'react-native-safe-area-context';
 
 import { BannerAd, BannerAdSize, useForeground } from 'react-native-google-mobile-ads';
-import { Header } from '@/components/Header';
-import { AD_UNIT_IDS } from '@/constants/ads';
+// import { AD_UNIT_IDS } from '@/constants/ads';
 
 import { Colors } from '../constants/theme';
 
@@ -18,13 +17,13 @@ export default function ResultScreen() {
   const [bgColor, setBgColor] = useState('');
   const [buttonColor, setButtonColor] = useState('');
   const [displayArticle, setDisplayArticle] = useState('');
-  const [adLoaded, setAdLoaded] = useState(false)
+  // const [adLoaded, setAdLoaded] = useState(false)
 
-  const bannerRef = useRef<BannerAd>(null);
+  // const bannerRef = useRef<BannerAd>(null);
 
-  useForeground(() => {
-    Platform.OS === 'ios' && bannerRef.current?.load();
-  });
+  // useForeground(() => {
+  //   Platform.OS === 'ios' && bannerRef.current?.load();
+  // });
 
   const genders = {
     m: 'der',
@@ -74,7 +73,6 @@ export default function ResultScreen() {
 
   return (
     <>
-      {/* <Header /> */}
       <SafeAreaView style={[styles.outerContainer, { backgroundColor: bgColor }]}>
         <View style={styles.container}>
           <Text style={styles.text}>{`${displayArticle} ${word}`}</Text>
@@ -89,7 +87,7 @@ export default function ResultScreen() {
           </Button>
         </View>
       </SafeAreaView>
-      <BannerAd
+      {/* <BannerAd
         ref={bannerRef}
         unitId={AD_UNIT_IDS?.banner}
         size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
@@ -97,6 +95,7 @@ export default function ResultScreen() {
         onAdFailedToLoad={(error) => console.log('Failed to load banner', error)}
       />
       {!adLoaded && <View style={{width: 300, height: 60, alignSelf: 'center' }}></View>}
+       */}
     </>
   );
 }

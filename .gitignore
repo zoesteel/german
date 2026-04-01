@@ -34,6 +34,8 @@ yarn-error.*
 .env*
 app.config.js
 package-lock.json
+GoogleService-Info.plist
+google-services.json
 
 # typescript
 *.tsbuildinfo
